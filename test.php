@@ -37,90 +37,88 @@ require_once('dbconn.php');
 
             <div class="col-8 main-content">
                 <?php
-                // Check if a specific question is selected
-                if (isset($_GET['question_id'])) {
-                    $questionId = $_GET['question_id'];
+                    // Check if a specific question is selected
+                    if (isset($_GET['question_id'])) {
+                        $questionId = $_GET['question_id'];
 
-                    // Retrieve the question details from ac_questiondb table
-                    $stmt = $pdo->prepare("SELECT * FROM ac_questiondb WHERE qstn_id = ?");
-                    $stmt->execute([$questionId]);
-                    $question = $stmt->fetch(PDO::FETCH_ASSOC);
+                        // Retrieve the question details from ac_questiondb table
+                        $stmt = $pdo->prepare("SELECT * FROM ac_questiondb WHERE qstn_id = ?");
+                        $stmt->execute([$questionId]);
+                        $question = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    if ($question) {
-                        // Display the question details
-                        echo '<h2>' . $question['qstn'] . '</h2>';
-                        echo '<p>Exam: ' . $question['qstn_exam'] . '</p>';
-                        echo '<p>Year: ' . $question['qstn_year'] . '</p>';
-                        echo '<p>Options:</p>';
-                        echo '<form action="" method="POST">';
+                        if ($question) {
+                            // Display the question details
+                            echo '<h2>' . $question['qstn'] . '</h2>';
+                            echo '<p>Exam: ' . $question['qstn_exam'] . '</p>';
+                            echo '<p>Year: ' . $question['qstn_year'] . '</p>';
+                            echo '<p>Options:</p>';
+                            echo '<form action="" method="POST">';
 
-                        echo '
-<div class="form-check">
-    <input class="form-check-input" type="radio" name="answer" id="option1" value="Option 1">
-    <label class="form-check-label" for="option1">' . $question['option1'] . '</label>
-</div>
+                            echo '
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="answer" id="option1" value="Option 1">
+                                <label class="form-check-label" for="option1">' . $question['option1'] . '</label>
+                            </div>
 
-<div class="form-check">
-    <input class="form-check-input" type="radio" name="answer" id="option2" value="Option 2">
-    <label class="form-check-label" for="option2">' . $question['option2'] . '</label>
-</div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="answer" id="option2" value="Option 2">
+                                <label class="form-check-label" for="option2">' . $question['option2'] . '</label>
+                            </div>
 
-<div class="form-check">
-    <input class="form-check-input" type="radio" name="answer" id="option3" value="Option 3">
-    <label class="form-check-label" for="option3">' . $question['option3'] . '</label>
-</div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="answer" id="option3" value="Option 3">
+                                <label class="form-check-label" for="option3">' . $question['option3'] . '</label>
+                            </div>
 
-<div class="form-check">
-    <input class="form-check-input" type="radio" name="answer" id="option4" value="Option 4">
-    <label class="form-check-label" for="option4">' . $question['option4'] . '</label>
-</div>
-';
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="answer" id="option4" value="Option 4">
+                                <label class="form-check-label" for="option4">' . $question['option4'] . '</label>
+                            </div>
+                            ';
 
-                        // echo '<ul>';
-                        // echo '<li><label><input type="radio" name="answer" value="Option 1"> ' . $question['option1'] . '</label></li>';
-                        // echo '<li><label><input type="radio" name="answer" value="Option 2"> ' . $question['option2'] . '</label></li>';
-                        // echo '<li><label><input type="radio" name="answer" value="Option 3"> ' . $question['option3'] . '</label></li>';
-                        // echo '<li><label><input type="radio" name="answer" value="Option 4"> ' . $question['option4'] . '</label></li>';
-                        // echo '</ul>';
-                        echo '<button type="submit" class="btn btn-primary">Check Answer</button>';
-                        echo '</form>';
+                            echo '<button type="submit" class="btn btn-primary">Check Answer</button>';
 
-                        // Check if the form is submitted
-                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                            $selectedOption = $_POST['answer'];
-                            $correctAnswer = $question['answer'];
+                            // Check if the form is submitted
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                                $selectedOption = $_POST['answer'];
+                                $correctAnswer = $question['answer'];
 
-                            // Compare the selected option with the correct answer
-                            if ($selectedOption === $correctAnswer) {
-                                echo '<p class="text-success">Correct Answer!</p>';
-                            } else {
-                                echo '<p class="text-danger">Incorrect Answer!</p>';
+                                // Compare the selected option with the correct answer
+                                if ($selectedOption === $correctAnswer) {
+                                    echo '<p class="text-success">Correct Answer!</p>';
+                                } else {
+                                    echo '<p class="text-danger">Incorrect Answer!</p>';
+                                }
+
+                                // Display the "Show Description" button if the question has been answered
+                                echo '<button type="button" class="btn btn-primary" id="show-description">Show Description</button>';
+
+                                // Display the description if the "Show Description" button is clicked
+                                echo '
+                                <div id="description" style="display: none;">
+                                    <h3>Description:</h3>
+                                    <p>' . $question['description'] . '</p>
+                                </div>
+                                ';
+
+                                // Script to toggle the display of the description
+                                echo '
+                                <script>
+                                    document.getElementById("show-description").addEventListener("click", function() {
+                                        document.getElementById("description").style.display = "block";
+                                    });
+                                </script>
+                                ';
                             }
+
+                            echo '</form>';
+                        } else {
+                            echo '<p>Question not found.</p>';
                         }
                     } else {
-                        echo '<p>Question not found.</p>';
+                        echo '<p>Select a question from the sidebar.</p>';
                     }
 
-
-                //     if ($question) {
-                //         // Display the question details
-                //         echo '<h2>' . $question['qstn'] . '</h2>';
-                //         echo '<p>Exam: ' . $question['qstn_exam'] . '</p>';
-                //         echo '<p>Year: ' . $question['qstn_year'] . '</p>';
-                //         echo '<p>Options:</p>';
-                //         echo '<ul>';
-                //         echo '<li>' . $question['option1'] . '</li>';
-                //         echo '<li>' . $question['option2'] . '</li>';
-                //         echo '<li>' . $question['option3'] . '</li>';
-                //         echo '<li>' . $question['option4'] . '</li>';
-                //         echo '</ul>';
-                //         echo '<p>Answer: ' . $question['answer'] . '</p>';
-                //     } else {
-                //         echo '<p>Question not found.</p>';
-                //     }
-                 } else {
-                     echo '<p>Select a question from the sidebar.</p>';
-                 }
                 ?>
             </div>
         </div>
